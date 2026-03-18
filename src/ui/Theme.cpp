@@ -324,5 +324,41 @@ namespace Theme {
                     ImVec2(p.x + w, p.y + ts.y * 0.5f),
                     IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 55), 1.0f);
         ImGui::Dummy(ImVec2(0, ts.y + 4));
+    void DrawTelemetryGraph(const char* label, float* values, int count, ImVec4 color, float min_v, float max_v, ImVec2 size) {
+        ImGui::BeginGroup();
+        ImGui::TextDisabled("%s", label);
+        
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        ImVec2 end = ImVec2(pos.x + size.x, pos.y + size.y);
+
+        // Background
+        dl->AddRectFilled(pos, end, IM_COL32(15, 15, 25, 200), 4.0f);
+        
+        // Lines & Fill
+        if (count > 1) {
+            for (int i = 0; i < count - 1; i++) {
+                float t1 = (float)i / (count - 1);
+                float t2 = (float)(i + 1) / (count - 1);
+                float v1 = (values[i] - min_v) / (max_v - min_v);
+                float v2 = (values[i+1] - min_v) / (max_v - min_v);
+                
+                ImVec2 p1 = ImVec2(pos.x + t1 * size.x, end.y - v1 * size.y);
+                ImVec2 p2 = ImVec2(pos.x + t2 * size.x, end.y - v2 * size.y);
+                
+                dl->AddLine(p1, p2, ImGui::GetColorU32(color), 2.0f);
+                
+                // Fill
+                ImVec2 pts[4] = { p1, p2, ImVec2(p2.x, end.y), ImVec2(p1.x, end.y) };
+                dl->AddConvexPolyFilled(pts, 4, ImGui::GetColorU32(ImVec4(color.x, color.y, color.z, 0.2f)));
+            }
+        }
+
+        ImGui::Dummy(size);
+        ImGui::EndGroup();
+    }
+
+    ImVec4 ColorToVec4(ImColor color) {
+        return ImVec4(color.Value.x, color.Value.y, color.Value.z, color.Value.w);
     }
 }

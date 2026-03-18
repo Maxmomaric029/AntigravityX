@@ -55,9 +55,15 @@ namespace MainWindow {
     static bool  sHit_Trigger     = false;
     static float sHit_TrigDelay   = 30.0f;
 
-    // ── SYSTEM state ──
-    static bool  sSys_FPSUnlock   = false;
-    static bool  sSys_RAMPurge    = false;
+    // ── AGX state ──
+    static bool  sAGX_AutoClean   = false;
+    static bool  sAGX_AutoStartup = false;
+    static bool  sAGX_KillProcs   = false;
+    static bool  sAGX_RegFix      = false;
+    static float sAGX_CPUUsage    = 0.23f;
+    static float sAGX_RAMUsage    = 0.55f;
+    static float sCPUHistory[60]  = {};
+    static float sRAMHistory[60]  = {};
     static bool  sSys_GPUOC       = false;
     static bool  sSys_AntiReport  = false;
     static bool  sSys_LogCleaner  = false;
@@ -240,18 +246,19 @@ namespace MainWindow {
         ImGui::TextWrapped("The ultimate optimization suite for the next generation of gamers.");
         ImGui::Dummy(ImVec2(0, 12));
 
+        // Update History
+        for (int i = 0; i < 59; i++) {
+            sCPUHistory[i] = sCPUHistory[i+1];
+            sRAMHistory[i] = sRAMHistory[i+1];
+        }
+        sCPUHistory[59] = sAGX_CPUUsage + (sinf((float)ImGui::GetTime() * 2.0f) * 0.05f);
+        sRAMHistory[59] = sAGX_RAMUsage;
+
         // Stats
         ImGui::BeginGroup();
-        ImGui::TextDisabled("CPU LOAD");
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(Theme::Accent.x, Theme::Accent.y, Theme::Accent.z, 1.0f));
-        ImGui::ProgressBar(sAGX_CPUUsage, ImVec2(-1, 8), "");
-        ImGui::PopStyleColor();
-        
-        ImGui::Dummy(ImVec2(0, 5));
-        ImGui::TextDisabled("RAM LOAD");
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.9f, 1.0f, 1.0f));
-        ImGui::ProgressBar(sAGX_RAMUsage, ImVec2(-1, 8), "");
-        ImGui::PopStyleColor();
+        Theme::DrawTelemetryGraph("CPU LOAD (REAL-TIME)", sCPUHistory, 60, Theme::ColorToVec4(Theme::Accent), 0.0f, 1.0f, ImVec2(ImGui::GetContentRegionAvail().x, 60));
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::DrawTelemetryGraph("MEMORY USAGE (STABLE)", sRAMHistory, 60, ImVec4(0.0f, 0.8f, 1.0f, 1.0f), 0.0f, 1.0f, ImVec2(ImGui::GetContentRegionAvail().x, 60));
         ImGui::EndGroup();
 
         ImGui::Dummy(ImVec2(0, 15));

@@ -21,60 +21,37 @@ class OverlayMenuView(context: Context) : View(context) {
     // ── Sections ──────────────────────────────────────────────────
     private val sections = listOf("COMBAT", "VISUALS", "HITBOX", "SYSTEM", "AGX")
     private val sectionIcons = listOf(">>", "[]", "<>", "**", "AX")
-    private var activeSection = 0
+    private var activeSection get() = MenuState.activeSection
+        set(value) { MenuState.activeSection = value }
 
     // ── Animation ─────────────────────────────────────────────────
     private var panelSlide = 0f       // 0..1
     private var fadeAlpha  = 0f       // 0..1
 
     // ── COMBAT state ──────────────────────────────────────────────
-    private val combatToggles = mutableMapOf(
-        "AimLock Head"     to false,
-        "AimLock Smooth"   to false,
-        "Silent Aim"       to false,
-        "FOV Circle"       to false,
-        "No Recoil 100%"   to false,
-    )
-    private var combatFOV     = 80f
-    private var combatSmooth  = 4f
+    private val combatToggles get() = MenuState.combatToggles
+    private var combatFOV     get() = MenuState.combatFOV
+        set(value) { MenuState.combatFOV = value }
+    private var combatSmooth  get() = MenuState.combatSmooth
+        set(value) { MenuState.combatSmooth = value }
 
     // ── VISUALS state ─────────────────────────────────────────────
-    private val visualsToggles = mutableMapOf(
-        "ESP Box 2D"       to false,
-        "ESP Box 3D"       to false,
-        "ESP Distance"     to false,
-        "ESP Name & Clan"  to false,
-        "ESP Skeleton"     to false,
-        "ESP Line"         to false,
-    )
+    private val visualsToggles get() = MenuState.visualsToggles
 
     // ── HITBOX state ──────────────────────────────────────────────
-    private val hitboxToggles = mutableMapOf(
-        "Hitbox Expand"    to false,
-        "Hitbox Pescoco"   to false,
-        "NPC Big Head"     to false,
-        "Triggerbot"       to false,
-    )
-    private var hitboxScale = 0   // 0=x2, 1=x5, 2=x10
-    private var trigDelay   = 30f
+    private val hitboxToggles get() = MenuState.hitboxToggles
+    private var hitboxScale   get() = MenuState.hitboxScale
+        set(value) { MenuState.hitboxScale = value }
+    private var trigDelay     get() = MenuState.trigDelay
+        set(value) { MenuState.trigDelay = value }
 
     // ── SYSTEM state ──────────────────────────────────────────────
-    private val systemToggles = mutableMapOf(
-        "120 FPS Unlocker"    to false,
-        "RAM Purge"           to false,
-        "GPU Overclock (Sim)" to false,
-        "Anti-Report System"  to false,
-        "Log Cleaner"         to false,
-    )
-    private var fpsTarget = 120f
+    private val systemToggles get() = MenuState.systemToggles
+    private var fpsTarget     get() = MenuState.fpsTarget
+        set(value) { MenuState.fpsTarget = value }
 
     // ── AGX state ─────────────────────────────────────────────────
-    private val agxToggles = mutableMapOf(
-        "Auto Clean"          to false,
-        "Disable Startup Bloat" to false,
-        "Kill BG Processes"   to false,
-        "Registry Optimizer"  to false,
-    )
+    private val agxToggles get() = MenuState.agxToggles
     private val cpuUsage = 0.23f
     private val ramUsage = 0.55f
 
