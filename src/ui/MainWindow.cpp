@@ -210,25 +210,7 @@ namespace MainWindow {
         Theme::ModernSlider("Trigger Delay", &sHit_TrigDelay, 0.0f, 500.0f, "%.0f ms");
     }
 
-        const char* scaleLabels[] = { "x2", "x5", "x10" };
-        ImGui::PushFont(Theme::FontSmall);
-        ImGui::TextColored(ImVec4(0.6f,0.6f,0.7f,1), "Hitbox Scale");
-        ImGui::PopFont();
-        ImGui::Dummy(ImVec2(0, 4));
-
-        static int sHitScale = 0;
-        for (int i = 0; i < 3; i++) {
-            bool sel = (sHitScale == i);
-            if (sel) ImGui::PushStyleColor(ImGuiCol_Button,
-                ImVec4(Theme::Accent.x, Theme::Accent.y, Theme::Accent.z, 0.55f));
-            else     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f,0.1f,0.16f,1));
-            if (ImGui::Button(scaleLabels[i], ImVec2(54, 28))) sHitScale = i;
-            ImGui::PopStyleColor();
-            if (i < 2) ImGui::SameLine();
-        }
-        ImGui::Dummy(ImVec2(0, 8));
-        Theme::ModernSlider("Trigger Delay (ms)", &sHit_TrigDelay, 0.0f, 300.0f, "%.0f ms");
-    }
+    // ─────────────────────────────────────
 
     // ─────────────────────────────────────
     // ─────────────────────────────────────
