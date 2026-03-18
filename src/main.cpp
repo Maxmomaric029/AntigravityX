@@ -21,7 +21,7 @@ int main(int, char**) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "AntiGravity X - System Optimizer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "AntiGravity X - v2.4.0 PREMIUM", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     
