@@ -38,7 +38,7 @@ set(PROJECT_SOURCES
     src/core/Tweaks.cpp
 )
 
-add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES} ${IMGUI_SOURCES})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${IMGUI_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${IMGUI_DIR}
