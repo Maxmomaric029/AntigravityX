@@ -101,14 +101,15 @@ namespace Theme {
     void RenderGlowingText(const char* text, ImU32 color, ImVec2 pos, ImFont* font) {
         ImDrawList* dl = ImGui::GetWindowDrawList();
         ImU32 glow = (color & 0x00FFFFFF) | 0x28000000;
+        float font_size = font ? ImGui::GetFontSize() : ImGui::GetFontSize(); // Use current context size
 
         static const ImVec2 offsets[] = {
             {-2,0},{2,0},{0,-2},{0,2},{-1,-1},{1,-1},{-1,1},{1,1}
         };
         for (auto& o : offsets)
-            dl->AddText(font, font ? font->FontSize : 0,
+            dl->AddText(font, font_size,
                 ImVec2(pos.x + o.x, pos.y + o.y), glow, text);
-        dl->AddText(font, font ? font->FontSize : 0, pos, color, text);
+        dl->AddText(font, font_size, pos, color, text);
     }
 
     bool GlowingButton(const char* label, const ImVec2& size, ImU32 glowColor) {
