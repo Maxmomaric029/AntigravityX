@@ -86,13 +86,11 @@ class OverlayMenuView(context: Context) : View(context) {
 
     // ── Colors ────────────────────────────────────────────────────
     private val accent    = Color.parseColor("#8B2BE2")
-    private val accentC   = Color.parseColor("#00E5FF")
-    private val bgDeep    = Color.parseColor("#08080E")
-    private val bgPanel   = Color.parseColor("#0D0D18")
-    private val bgSidebar = Color.parseColor("#0A0A14")
+    private val bgPanel   = Color.parseColor("#EE0D0D18") // Added alpha for glass effect
+    private val bgSidebar = Color.parseColor("#F50A0A14")
     private val textPri   = Color.parseColor("#EAEAF5")
     private val textSec   = Color.parseColor("#7070A0")
-    private val divColor  = Color.parseColor("#8B2BE240")
+    private val divColor  = Color.parseColor("#308B2BE2")
 
     // ── Paints ────────────────────────────────────────────────────
     private val bgPaint      = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -436,7 +434,13 @@ class OverlayMenuView(context: Context) : View(context) {
         }
         canvas.drawText("FORCE BOOST", x + w/2f, y + 28f*dp, btP)
         btnHits.add(BtnHit("force_boost", bRect) { /* action */ })
-        y += 56f * dp
+        y += 20f * dp
+        val versionPaint = Paint(textSecPaint).apply { textAlign = Paint.Align.CENTER }
+        canvas.drawText("Version: 2.4.0 Premium Edition", x + w/2f, y, versionPaint)
+        y += 16f * dp
+        canvas.drawText("Status: Secure & Verified", x + w/2f, y, versionPaint)
+        
+        y += 20f * dp
         return y
     }
 
