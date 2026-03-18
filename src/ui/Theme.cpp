@@ -20,21 +20,35 @@ namespace Theme {
         return false;
     }
 
-    void LoadFonts(ImGuiIO& io) {
-        const char* datatypeRegular = "Datatype,Sekuya/Datatype/static/Datatype-Regular.ttf";
-        const char* datatypeBold    = "Datatype,Sekuya/Datatype/static/Datatype-Bold.ttf";
-        const char* sekuya          = "Datatype,Sekuya/Sekuya/Sekuya-Regular.ttf";
+    std::string GetFontPath(const std::string& fileName) {
+        std::string paths[] = {
+            fileName,
+            "Datatype,Sekuya/" + fileName,
+            "../" + fileName,
+            "../Datatype,Sekuya/" + fileName,
+            "C:/Users/Mxzzy/Downloads/AntiGravity X/Datatype,Sekuya/" + fileName
+        };
+        for (const auto& p : paths) {
+            if (FileExists(p.c_str())) return p;
+        }
+        return "";
+    }
 
-        if (FileExists(datatypeRegular)) {
-            FontRegular = io.Fonts->AddFontFromFileTTF(datatypeRegular, 14.0f);
-            FontSmall   = io.Fonts->AddFontFromFileTTF(datatypeRegular, 11.0f);
+    void LoadFonts(ImGuiIO& io) {
+        std::string regularPath = GetFontPath("Datatype/static/Datatype-Regular.ttf");
+        std::string boldPath    = GetFontPath("Datatype/static/Datatype-Bold.ttf");
+        std::string sekuyaPath  = GetFontPath("Sekuya/Sekuya-Regular.ttf");
+
+        if (!regularPath.empty()) {
+            FontRegular = io.Fonts->AddFontFromFileTTF(regularPath.c_str(), 15.0f);
+            FontSmall   = io.Fonts->AddFontFromFileTTF(regularPath.c_str(), 12.0f);
         }
-        if (FileExists(datatypeBold)) {
-            FontBold    = io.Fonts->AddFontFromFileTTF(datatypeBold, 14.0f);
-            FontTitle   = io.Fonts->AddFontFromFileTTF(datatypeBold, 20.0f);
+        if (!boldPath.empty()) {
+            FontBold    = io.Fonts->AddFontFromFileTTF(boldPath.c_str(), 15.0f);
+            FontTitle   = io.Fonts->AddFontFromFileTTF(boldPath.c_str(), 22.0f);
         }
-        if (FileExists(sekuya)) {
-            FontSekuya  = io.Fonts->AddFontFromFileTTF(sekuya, 16.0f);
+        if (!sekuyaPath.empty()) {
+            FontSekuya  = io.Fonts->AddFontFromFileTTF(sekuyaPath.c_str(), 17.0f);
         }
 
         if (!FontRegular) FontRegular = io.Fonts->AddFontDefault();
@@ -101,15 +115,31 @@ namespace Theme {
         current += (target - current) * (1.0f - expf(-speed * dt));
     }
 
+    void DrawGlowRect(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, ImU32 color, float size, float rounding) {
+        for (int i = 1; i <= (int)size; i++) {
+            float alpha = (1.0f - (float)i / size) * 0.12f;
+            ImU32 col = (color & 0x00FFFFFF) | ((ImU32)(alpha * 255) << 24);
+            dl->AddRect(ImVec2(p_min.x - i, p_min.y - i), ImVec2(p_max.x + i, p_max.y + i), col, rounding, 0, 1.0f);
+        }
+    }
+
+    void DrawGradientRect(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, ImU32 col1, ImU32 col2, bool vertical) {
+        dl->AddRectFilledMultiColor(p_min, p_max, col1, vertical ? col1 : col2, col2, vertical ? col2 : col1);
+    }
+
     void DrawGlassPanel(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, float rounding, float alpha) {
-        // Layered glass effect
-        dl->AddRectFilled(p_min, p_max,
-            IM_COL32(12, 12, 22, (int)(alpha * 210)), rounding);
-        dl->AddRectFilled(p_min, ImVec2(p_max.x, p_min.y + 1),
-            IM_COL32(255, 255, 255, 18), rounding);
-        dl->AddRect(p_min, p_max,
-            IM_COL32((int)(Accent.x * 255), (int)(Accent.y * 255), (int)(Accent.z * 255), 45),
-            rounding, 0, 1.0f);
+        // Drop Shadow
+        DrawGlowRect(dl, p_min, p_max, IM_COL32(0, 0, 0, 150), 15.0f, rounding);
+
+        // Core Glass Background
+        dl->AddRectFilled(p_min, p_max, IM_COL32(10, 10, 20, (int)(alpha * 250)), rounding);
+
+        // Top Highlight (Sheen)
+        DrawGradientRect(dl, p_min, ImVec2(p_max.x, p_min.y + 40),
+            IM_COL32(255, 255, 255, 12), IM_COL32(255, 255, 255, 0), true);
+
+        // Edge light
+        dl->AddRect(p_min, p_max, IM_COL32(138, 43, 226, 60), rounding, 0, 1.0f);
     }
 
     void RenderGlowingText(const char* text, ImU32 color, ImVec2 pos, ImFont* font) {
@@ -153,10 +183,11 @@ namespace Theme {
     }
 
     bool SidebarTab(const char* icon, const char* label, bool selected, float& highlightAlpha) {
-        EaseValue(highlightAlpha, selected ? 1.0f : 0.0f, 12.0f);
+        EaseValue(highlightAlpha, selected ? 1.0f : 0.0f, 15.0f);
 
         ImVec2 p      = ImGui::GetCursorScreenPos();
-        ImVec2 size   = ImVec2(ImGui::GetContentRegionAvail().x, 44.0f);
+        ImVec2 size   = ImVec2(ImGui::GetContentRegionAvail().x - 10, 44.0f);
+        p.x += 5; // Horizontal offset for centering feel
         ImDrawList* dl = ImGui::GetWindowDrawList();
 
         bool hovered, held;
@@ -164,26 +195,36 @@ namespace Theme {
             ImRect(p, ImVec2(p.x + size.x, p.y + size.y)),
             ImGui::GetID(label), &hovered, &held);
 
-        float bgAlpha = highlightAlpha * 0.35f + (hovered ? 0.12f : 0.0f);
-        if (bgAlpha > 0.01f)
-            dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y),
-                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255),
-                          (int)(bgAlpha * 255)), 7.0f);
+        // Sidebar background gradient when selected/hovered
+        float bgAlpha = highlightAlpha * 0.25f + (hovered ? 0.10f : 0.0f);
+        if (bgAlpha > 0.01f) {
+            ImU32 col1 = IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), (int)(bgAlpha * 255));
+            ImU32 col2 = IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 0);
+            DrawGradientRect(dl, p, ImVec2(p.x + size.x, p.y + size.y), col1, col2, false);
+        }
 
-        // Left accent bar
-        if (highlightAlpha > 0.01f)
-            dl->AddRectFilled(p, ImVec2(p.x + 3, p.y + size.y),
-                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255),
-                          (int)(highlightAlpha * 220)), 2.0f);
+        // Left accent bar (The "active" indicator)
+        if (highlightAlpha > 0.01f) {
+            float barH = size.y * 0.5f * highlightAlpha;
+            dl->AddRectFilled(ImVec2(p.x - 2, p.y + (size.y - barH) * 0.5f),
+                ImVec2(p.x + 1, p.y + (size.y + barH) * 0.5f),
+                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), (int)(highlightAlpha * 255)), 2.0f);
+            
+            // Outer glow for the bar
+            DrawGlowRect(dl, ImVec2(p.x - 3, p.y + (size.y - barH) * 0.5f),
+                ImVec2(p.x, p.y + (size.y + barH) * 0.5f),
+                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 100), 4.0f, 2.0f);
+        }
 
-        // Icon
-        ImU32 textCol = selected
-            ? IM_COL32(235, 235, 255, 255)
-            : IM_COL32(140, 140, 170, 200);
+        ImU32 textCol = selected ? IM_COL32(255, 255, 255, 255) : IM_COL32(160, 160, 180, 200);
+        
+        // Icon (slightly larger)
+        ImGui::PushFont(FontSekuya ? FontSekuya : FontBold);
         dl->AddText(ImVec2(p.x + 14, p.y + (size.y - ImGui::GetFontSize()) * 0.5f), textCol, icon);
+        ImGui::PopFont();
 
         // Label
-        dl->AddText(ImVec2(p.x + 38, p.y + (size.y - ImGui::GetFontSize()) * 0.5f), textCol, label);
+        dl->AddText(ImVec2(p.x + 42, p.y + (size.y - ImGui::GetFontSize()) * 0.5f), textCol, label);
 
         ImGui::ItemSize(size);
         return pressed;
@@ -238,15 +279,21 @@ namespace Theme {
             IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 255), valBuf);
 
         // Track
-        ImVec2 tp = ImVec2(p.x, p.y + h - 10);
+        ImVec2 tp = ImVec2(p.x, p.y + h - 8);
         dl->AddRectFilled(tp, ImVec2(tp.x + tw, tp.y + th),
-            IM_COL32(35, 35, 55, 255), 2.0f);
+            IM_COL32(30, 30, 50, 255), 2.0f);
 
         // Fill
         float t = (*v - v_min) / (v_max - v_min);
-        if (t > 0.0f)
-            dl->AddRectFilled(tp, ImVec2(tp.x + tw * t, tp.y + th),
-                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 200), 2.0f);
+        if (t > 0.0f) {
+            DrawGradientRect(dl, tp, ImVec2(tp.x + tw * t, tp.y + th),
+                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 255),
+                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 150), false);
+            
+            // Glow on the fill
+            DrawGlowRect(dl, tp, ImVec2(tp.x + tw * t, tp.y + th),
+                IM_COL32((int)(Accent.x*255),(int)(Accent.y*255),(int)(Accent.z*255), 80), 3.0f, 2.0f);
+        }
 
         // Thumb
         float tx = tp.x + tw * t;

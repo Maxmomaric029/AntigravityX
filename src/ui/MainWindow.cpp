@@ -153,66 +153,62 @@ namespace MainWindow {
 
     // ─────────────────────────────────────
     static void RenderCombat() {
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::SectionHeader("  Aimbot & AimLock");
+        Theme::SectionHeader("AIM BOT & LOCK");
+        ImGui::TextDisabled("Advanced magnetic targeting and aim assistance.");
+        ImGui::Dummy(ImVec2(0, 5));
 
-        Theme::ToggleSwitch("AimLock Supremo  (Head)", &sCombat_AimLockHead);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("AimLock Smooth   (Neck)",  &sCombat_AimLockSmooth);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Silent Aim  (Magic Bullet)", &sCombat_SilentAim);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("FOV Circle", &sCombat_FOVCircle);
-        ImGui::Dummy(ImVec2(0, 4));
+        Theme::ToggleSwitch("AimLock Supremo (Head)", &sCombat_AimLockHead);
+        Theme::ToggleSwitch("AimLock Smooth (Neck)", &sCombat_AimLockSmooth);
+        Theme::ToggleSwitch("Silent Aim (Magic Bullet)", &sCombat_SilentAim);
+        
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("FIELD OF VIEW");
+        Theme::ToggleSwitch("Draw FOV Circle", &sCombat_FOVCircle);
+        Theme::ModernSlider("FOV Intensity", &sCombat_FOV, 10.0f, 360.0f);
+        
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("RECOIL & HANDLING");
         Theme::ToggleSwitch("No Recoil 100%", &sCombat_NoRecoil);
-
-        ImGui::Dummy(ImVec2(0, 12));
-        Theme::SectionHeader("  Parameters");
-
-        Theme::ModernSlider("Field of View", &sCombat_FOV, 10.0f, 360.0f, "%.0f");
-        ImGui::Dummy(ImVec2(0, 8));
         Theme::ModernSlider("Smoothing Factor", &sCombat_Smooth, 1.0f, 20.0f, "%.1f");
-        ImGui::Dummy(ImVec2(0, 8));
         Theme::ModernSlider("Reaction Time (ms)", &sCombat_ReactionMs, 0.0f, 250.0f, "%.0f ms");
     }
 
     // ─────────────────────────────────────
     static void RenderVisuals() {
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::SectionHeader("  ESP & Wallhack");
+        Theme::SectionHeader("PLAYER ESP");
+        ImGui::TextDisabled("Wallhack and player information overlay.");
+        ImGui::Dummy(ImVec2(0, 5));
 
-        Theme::ToggleSwitch("ESP Box 2D",      &sVis_ESPBox);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("ESP Box 3D",      &sVis_ESP3D);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("ESP Distance",    &sVis_Distance);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("ESP Name & Clan", &sVis_Name);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("ESP Skeleton  (Morado 9B)", &sVis_Skeleton);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("ESP Line  (Head-to-Head)", &sVis_Line);
+        Theme::ToggleSwitch("ESP Box (2D/3D)", &sVis_ESPBox);
+        Theme::ToggleSwitch("Distance Info", &sVis_Distance);
+        Theme::ToggleSwitch("Player Names", &sVis_Name);
+        Theme::ToggleSwitch("Skeleton ESP", &sVis_Skeleton);
+        Theme::ToggleSwitch("Snap Lines", &sVis_Line);
 
-        ImGui::Dummy(ImVec2(0, 12));
-        Theme::SectionHeader("  Parameters");
-        Theme::ModernSlider("Box Thickness", &sVis_BoxThick, 0.5f, 4.0f, "%.1f px");
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("RENDER SETTINGS");
+        Theme::ModernSlider("Box Thickness", &sVis_BoxThick, 0.5f, 5.0f, "%.1f px");
     }
 
     // ─────────────────────────────────────
     static void RenderHitbox() {
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::SectionHeader("  Trigger & Scale");
+        Theme::SectionHeader("HITBOX EXPANSION");
+        ImGui::TextDisabled("Modify enemy hitboxes for easier targeting.");
+        ImGui::Dummy(ImVec2(0, 5));
 
-        Theme::ToggleSwitch("Hitbox Expand",    &sHit_Expand);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Hitbox Pescoco  (Neck Focus)", &sHit_Pescoco);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("NPC Big Head  (Visual Only)", &sHit_NPCBigHead);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Triggerbot", &sHit_Trigger);
-
-        ImGui::Dummy(ImVec2(0, 12));
-        Theme::SectionHeader("  Parameters");
+        Theme::ToggleSwitch("Expand Hitbox", &sHit_Expand);
+        Theme::ModernSlider("Expansion Scale", &sHit_ExpandScale, 1.0f, 10.0f, "%.1fx");
+        
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("SPECIAL TARGETS");
+        Theme::ToggleSwitch("Forced Headshot (Pescoco)", &sHit_Pescoco);
+        Theme::ToggleSwitch("NPC Big Head Mode", &sHit_NPCBigHead);
+        
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("TRIGGER BOT");
+        Theme::ToggleSwitch("Auto Trigger", &sHit_Trigger);
+        Theme::ModernSlider("Trigger Delay", &sHit_TrigDelay, 0.0f, 500.0f, "%.0f ms");
+    }
 
         const char* scaleLabels[] = { "x2", "x5", "x10" };
         ImGui::PushFont(Theme::FontSmall);
@@ -235,67 +231,58 @@ namespace MainWindow {
     }
 
     // ─────────────────────────────────────
+    // ─────────────────────────────────────
     static void RenderSystem() {
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::SectionHeader("  Performance & Bypass");
+        Theme::SectionHeader("PERFORMANCE & BYPASS");
+        ImGui::TextDisabled("Improve system speeds and bypass in-game report limits.");
+        ImGui::Dummy(ImVec2(0, 5));
 
-        Theme::ToggleSwitch("120 FPS Unlocker",       &sSys_FPSUnlock);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("RAM Purge  (Anti-Lag)",  &sSys_RAMPurge);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("GPU Overclock  (Sim)",   &sSys_GPUOC);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Anti-Report System",     &sSys_AntiReport);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Log Cleaner  (on exit)", &sSys_LogCleaner);
-
-        ImGui::Dummy(ImVec2(0, 12));
-        Theme::SectionHeader("  Parameters");
-        Theme::ModernSlider("Target FPS", &sSys_FPSTarget, 60.0f, 240.0f, "%.0f fps");
+        Theme::ToggleSwitch("FPS Unlocker (Max Link)", &sSys_FPSUnlock);
+        Theme::ModernSlider("Target Frame Rate", &sSys_FPSTarget, 30.0f, 360.0f, "%.0f FPS");
+        
+        ImGui::Dummy(ImVec2(0, 10));
+        Theme::SectionHeader("SECURITY PROTOCOLS");
+        Theme::ToggleSwitch("Anti-Report Bypass", &sSys_AntiReport);
+        Theme::ToggleSwitch("Deep Log Cleaner", &sSys_LogCleaner);
+        Theme::ToggleSwitch("GPU/CPU Overclock (Sim)", &sSys_GPUOC);
+        
+        ImGui::Dummy(ImVec2(0, 15));
+        if (Theme::GlowingButton("FLUSH SYSTEM RAM", ImVec2(ImGui::GetContentRegionAvail().x, 38), IM_COL32(50, 205, 50, 200))) {
+            // Logic handled by Cleaner
+        }
     }
 
     // ─────────────────────────────────────
     static void RenderAntiGravityX() {
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::SectionHeader("  System Dashboard");
-
-        ImGui::PushFont(Theme::FontSmall);
-        ImGui::TextColored(ImVec4(0.6f,0.6f,0.7f,1), "CPU Usage");
-        ImGui::PopFont();
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
-            ImVec4(Theme::Accent.x, Theme::Accent.y, Theme::Accent.z, 1.0f));
-        ImGui::ProgressBar(sAGX_CPUUsage, ImVec2(-1, 10), "");
-        ImGui::PopStyleColor();
-        ImGui::Dummy(ImVec2(0, 4));
-
-        ImGui::PushFont(Theme::FontSmall);
-        ImGui::TextColored(ImVec4(0.6f,0.6f,0.7f,1), "RAM Usage");
-        ImGui::PopFont();
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
-            ImVec4(0.0f, 0.9f, 1.0f, 1.0f));
-        ImGui::ProgressBar(sAGX_RAMUsage, ImVec2(-1, 10), "");
-        ImGui::PopStyleColor();
-
+        Theme::SectionHeader("CORE DASHBOARD");
+        ImGui::TextWrapped("The ultimate optimization suite for the next generation of gamers.");
         ImGui::Dummy(ImVec2(0, 12));
-        Theme::SectionHeader("  Automation");
 
-        Theme::ToggleSwitch("Auto Clean on Launch",    &sAGX_AutoClean);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Disable Startup Bloat",  &sAGX_AutoStartup);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Kill Background Procs",  &sAGX_KillProcs);
-        ImGui::Dummy(ImVec2(0, 4));
-        Theme::ToggleSwitch("Registry Optimizer",     &sAGX_RegFix);
+        // Stats
+        ImGui::BeginGroup();
+        ImGui::TextDisabled("CPU LOAD");
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(Theme::Accent.x, Theme::Accent.y, Theme::Accent.z, 1.0f));
+        ImGui::ProgressBar(sAGX_CPUUsage, ImVec2(-1, 8), "");
+        ImGui::PopStyleColor();
+        
+        ImGui::Dummy(ImVec2(0, 5));
+        ImGui::TextDisabled("RAM LOAD");
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.9f, 1.0f, 1.0f));
+        ImGui::ProgressBar(sAGX_RAMUsage, ImVec2(-1, 8), "");
+        ImGui::PopStyleColor();
+        ImGui::EndGroup();
 
-        ImGui::Dummy(ImVec2(0, 16));
-        ImGui::PushStyleColor(ImGuiCol_Button,
-            ImVec4(0.8f, 0.1f, 0.1f, 0.75f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-            ImVec4(1.0f, 0.2f, 0.2f, 0.90f));
-        ImGui::PushFont(Theme::FontBold);
-        if (ImGui::Button("  FORCE BOOST  ", ImVec2(-1, 46))) { /* Action */ }
-        ImGui::PopFont();
-        ImGui::PopStyleColor(2);
+        ImGui::Dummy(ImVec2(0, 15));
+        Theme::SectionHeader("MAINTENANCE");
+        Theme::ToggleSwitch("Auto-Clean Cache", &sAGX_AutoClean);
+        Theme::ToggleSwitch("Launch at Startup", &sAGX_AutoStartup);
+        Theme::ToggleSwitch("Kill High-Usage Procs", &sAGX_KillProcs);
+        Theme::ToggleSwitch("Registry Optimizer", &sAGX_RegFix);
+        
+        ImGui::Dummy(ImVec2(0, 20));
+        ImGui::Separator();
+        ImGui::TextDisabled("Status: Secure & Verified");
+        ImGui::TextDisabled("Version: 2.4.0 Premium Edition");
     }
 
     // ─────────────────────────────────────
@@ -366,6 +353,7 @@ namespace MainWindow {
             IM_COL32(8, 8, 14, 255));
 
         // ── Layout ──
+        ImGui::SetCursorPos(ImVec2(0, 0));
         ImGui::PushFont(Theme::FontRegular);
 
         // Sidebar
@@ -373,7 +361,8 @@ namespace MainWindow {
         ImGui::SameLine(0, 0);
 
         // Right panel
-        float panelW = vp->Size.x - 188.0f;
+        float sidebarW = 188.0f;
+        float panelW = vp->Size.x - sidebarW;
         ImGui::BeginGroup();
 
         // Top Bar
@@ -381,12 +370,21 @@ namespace MainWindow {
 
         // Content area
         float contentH = vp->Size.y - 48.0f;
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(18, 14));
-        ImGui::BeginChild("##content", ImVec2(panelW, contentH), false);
+        
+        // ── Tab Transition State Machine ──
+        Theme::EaseValue(sTabAlpha, sTabTargetAlpha, 14.0f);
+        if (sTabTargetAlpha == 0.0f && sTabAlpha < 0.05f) {
+            sCurrentTab = sPendingTab;
+            sTabTargetAlpha = 1.0f;
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 20));
+        ImGui::BeginChild("##content", ImVec2(panelW, contentH), false, ImGuiWindowFlags_NoScrollbar);
         ImGui::PopStyleVar();
 
         // Fade via global alpha
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, sTabAlpha);
+        
         switch (sCurrentTab) {
             case 0: RenderCombat();      break;
             case 1: RenderVisuals();     break;
@@ -394,6 +392,7 @@ namespace MainWindow {
             case 3: RenderSystem();      break;
             case 4: RenderAntiGravityX();break;
         }
+        
         ImGui::PopStyleVar();
 
         ImGui::EndChild();

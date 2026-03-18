@@ -22,6 +22,12 @@ namespace Theme {
     // Easing: smoothly move 'current' toward 'target'
     void EaseValue(float& current, float target, float speed);
 
+    // Draw a soft glowing rectangle (for shadows/depth)
+    void DrawGlowRect(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, ImU32 color, float size, float rounding = 0.0f);
+
+    // Draw a vertical or horizontal gradient
+    void DrawGradientRect(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, ImU32 col1, ImU32 col2, bool vertical = true);
+
     // Draw a glass-style rounded background panel
     void DrawGlassPanel(ImDrawList* dl, ImVec2 p_min, ImVec2 p_max, float rounding, float alpha = 0.85f);
 
@@ -42,4 +48,7 @@ namespace Theme {
 
     // Draw a labeled separator
     void SectionHeader(const char* label);
+
+    // Helper to get font file path from assets folder or current dir
+    std::string GetFontPath(const std::string& fileName);
 }
