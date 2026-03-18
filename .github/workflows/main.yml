@@ -19,11 +19,18 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
 
+    - name: Prepare Artifact
+      run: |
+        mkdir -p dist
+        cp build/Release/AntiGravityX.exe dist/
+        cp -r "Datatype,Sekuya" dist/
+      shell: bash
+
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AntiGravityX-Windows
-        path: build/Release/AntiGravityX.exe
+        path: dist/
 
   build-android:
     name: Build Android APK

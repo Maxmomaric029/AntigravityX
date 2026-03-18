@@ -12,16 +12,30 @@ namespace Theme {
     // Default accent: electric purple
     ImVec4 Accent = ImVec4(0.54f, 0.17f, 0.89f, 1.0f);
 
-    void LoadFonts(ImGuiIO& io) {
-        std::string datatypeRegular = "Datatype,Sekuya/Datatype/static/Datatype-Regular.ttf";
-        std::string datatypeBold    = "Datatype,Sekuya/Datatype/static/Datatype-Bold.ttf";
-        std::string sekuya          = "Datatype,Sekuya/Sekuya/Sekuya-Regular.ttf";
+    bool FileExists(const char* name) {
+        if (FILE* file = fopen(name, "r")) {
+            fclose(file);
+            return true;
+        }
+        return false;
+    }
 
-        FontRegular = io.Fonts->AddFontFromFileTTF(datatypeRegular.c_str(), 14.0f);
-        FontBold    = io.Fonts->AddFontFromFileTTF(datatypeBold.c_str(), 14.0f);
-        FontTitle   = io.Fonts->AddFontFromFileTTF(datatypeBold.c_str(), 20.0f);
-        FontSmall   = io.Fonts->AddFontFromFileTTF(datatypeRegular.c_str(), 11.0f);
-        FontSekuya  = io.Fonts->AddFontFromFileTTF(sekuya.c_str(), 16.0f);
+    void LoadFonts(ImGuiIO& io) {
+        const char* datatypeRegular = "Datatype,Sekuya/Datatype/static/Datatype-Regular.ttf";
+        const char* datatypeBold    = "Datatype,Sekuya/Datatype/static/Datatype-Bold.ttf";
+        const char* sekuya          = "Datatype,Sekuya/Sekuya/Sekuya-Regular.ttf";
+
+        if (FileExists(datatypeRegular)) {
+            FontRegular = io.Fonts->AddFontFromFileTTF(datatypeRegular, 14.0f);
+            FontSmall   = io.Fonts->AddFontFromFileTTF(datatypeRegular, 11.0f);
+        }
+        if (FileExists(datatypeBold)) {
+            FontBold    = io.Fonts->AddFontFromFileTTF(datatypeBold, 14.0f);
+            FontTitle   = io.Fonts->AddFontFromFileTTF(datatypeBold, 20.0f);
+        }
+        if (FileExists(sekuya)) {
+            FontSekuya  = io.Fonts->AddFontFromFileTTF(sekuya, 16.0f);
+        }
 
         if (!FontRegular) FontRegular = io.Fonts->AddFontDefault();
         if (!FontBold)    FontBold    = io.Fonts->AddFontDefault();
