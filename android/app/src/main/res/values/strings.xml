@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiGravity X</string>
+    <string name="btn_launch">Launch Overlay</string>
+    <string name="btn_stop">Stop Overlay</string>
+    <string name="perm_title">Overlay Permission</string>
+    <string name="perm_desc">AntiGravity X needs the Draw Over Other Apps permission to show the overlay menu on top of games.</string>
+</resources>

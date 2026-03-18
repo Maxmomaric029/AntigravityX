@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#8B2BE2</color>
+    <color name="accent_cyan">#00E5FF</color>
+    <color name="bg_deep">#08080E</color>
+    <color name="bg_panel">#0D0D18</color>
+    <color name="bg_sidebar">#0A0A14</color>
+    <color name="text_primary">#EAEAF5</color>
+    <color name="text_secondary">#7070A0</color>
+    <color name="surface">#13132A</color>
+    <color name="danger">#CC1a1a</color>
+</resources>
