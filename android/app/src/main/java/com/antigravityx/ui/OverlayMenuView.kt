@@ -415,7 +415,11 @@ class OverlayMenuView(context: Context) : View(context) {
         val versionPaint = Paint(textSecPaint).apply { textAlign = Paint.Align.CENTER }
         canvas.drawText("Version: 2.4.0 Premium Edition", x + w/2f, y, versionPaint)
         y += 16f * dp
-        canvas.drawText("Status: Secure & Verified", x + w/2f, y, versionPaint)
+        val statusText = if (MenuState.isGameRunning) "Status: Free Fire Connected" else "Status: Waiting for Free Fire..."
+        val statusPaint = Paint(versionPaint).apply {
+            color = if (MenuState.isGameRunning) Color.parseColor("#00E5FF") else Color.parseColor("#FF4444")
+        }
+        canvas.drawText(statusText, x + w/2f, y, statusPaint)
         
         y += 20f * dp
         return y

@@ -1,0 +1,37 @@
+GUIA DE ESTUDIO Y REPLICACION DE MOD MENU (FREE FIRE MAX)
+
+1. COMPONENTES DEL MOD:
+- libWARZONE.so: Contiene los parches de memoria (offsets) y la interfaz visual.
+- libGROXYBYPASS.so: Contiene la logica para evadir el anti-cheat del juego.
+- UnityPlayer.smali: El "punto de entrada" donde se inyecta la carga de las librerias.
+
+2. COMO SE ENCONTRARON LOS OFFSETS:
+El juego usa Unity con IL2CPP. Para encontrar los offsets que usa WARZONE:
+- Se usa Il2CppDumper sobre 'libil2cpp.so' y 'global-metadata.dat'.
+- Esto genera un archivo 'script.py' para IDA Pro o un 'dump.cs'.
+- Ejemplo de offset tipico:
+  * Funcion: public void SetPlayerSpeed(float speed) { }
+  * Offset en dump.cs: 0x18F4A20
+- El modder toma ese 0x18F4A20 y escribe un valor (hex) en esa direccion de memoria para alterar la velocidad.
+
+3. LOGICA DEL CODIGO (C++):
+El archivo .so actua como un "inyector" interno. Usa funciones como:
+- mprotect(): Para dar permisos de escritura a la memoria del juego.
+- memcpy(): Para sobrescribir el codigo original con el truco (HEX patching).
+
+4. PASOS PARA INYECTAR EN UNA APK VIRGEN:
+A) Descompilar la APK virgen con Apktool.
+B) Copiar libWARZONE.so y libGROXYBYPASS.so a la carpeta /lib/arm64-v8a/.
+C) Editar smali_classes3/com/unity3d/player/UnityPlayer.smali:
+   Localizar: .method static constructor <clinit>()V
+   Añadir despues de la carga de "main":
+     const-string v0, "GROXYBYPASS"
+     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+     const-string v0, "WARZONE"
+     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+D) (Opcional) Si el mod pide permiso de superposicion, añadir al AndroidManifest.xml:
+   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+E) Recompilar, firmar la APK e instalar.
+
+5. NOTA SOBRE EL CIFRADO:
+Si las librerias no muestran texto legible, estan comprimidas con UPX o cifradas con un "packer" personalizado. Para descifrarlas se requiere un "dump" de la memoria RAM mientras el juego esta ejecutandose.

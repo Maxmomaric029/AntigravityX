@@ -1,0 +1,58 @@
+GUIA DE DESARROLLO DE MOD MENU Y BYPASS DESDE CERO
+
+1. ESTRUCTURA DE UN ARCHIVO .SO (SHARED OBJECT)
+Los archivos .so son bibliotecas compiladas en C o C++. En el modding de Android, se utilizan porque permiten interactuar directamente con la memoria RAM del juego (libil2cpp.so) de forma rapida y eficiente.
+
+Para crear el tuyo necesitas:
+- Android Studio instalado.
+- Android NDK (Native Development Kit).
+- Una 'Base' de Mod Menu (puedes buscar 'Android Mod Menu Base' en GitHub).
+
+2. CREACION DE OPCIONES Y MENUS
+Las opciones del menu se definen en C++. Cada opcion suele ser un 'Toggle' (activar/desactivar).
+
+EJEMPLO DE CODIGO C++ PARA UNA OPCION (SPEEDHACK):
+--------------------------------------------------
+bool speedActive = false;
+void *speedOffset = (void*)0x123456; // Offset obtenido con Il2CppDumper
+
+void hack_thread() {
+    while (true) {
+        if (speedActive) {
+            // Escribimos en la memoria para cambiar la velocidad
+            patchMemory(speedOffset, "00 00 A0 41"); // Hex para velocidad alta
+        } else {
+            // Restauramos el codigo original si se desactiva
+            restoreMemory(speedOffset);
+        }
+        sleep(1);
+    }
+}
+--------------------------------------------------
+
+3. INYECCION DEL BYPASS + TU PROPIO MOD
+Para que tu mod no sea detectado por el sistema anti-trampas de Free Fire, debes inyectar la libreria de Bypass que encontraste (libGROXYBYPASS.so) junto con la tuya.
+
+PASOS DE INYECCION EN SMALI (UnityPlayer.smali):
+--------------------------------------------------
+Busca el constructor '.method static constructor <clinit>()V' y añade:
+
+    const-string v0, "GROXYBYPASS"
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+
+    const-string v0, "TuNombreDeLib"  <-- Aqui pones el nombre de tu .so propio
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+--------------------------------------------------
+
+IMPORTANTE: El Bypass SIEMPRE debe cargarse antes que tu menu para que pueda 'limpiar' los detectores antes de que el mod empiece a actuar.
+
+4. FLUJO DE TRABAJO RECOMENDADO:
+1. Dump: Usa Il2CppDumper en la APK virgen para obtener los offsets actuales.
+2. Code: Escribe tu logica en C++ usando los offsets encontrados.
+3. Build: Compila tu proyecto en Android Studio para generar el archivo 'libTuNombre.so'.
+4. Mix: Toma una APK virgen, mete tu .so y el 'libGROXYBYPASS.so' en la carpeta lib/arm64-v8a/.
+5. Smali: Modifica UnityPlayer.smali para cargar ambas librerias.
+6. Sign: Firma la APK y prueba.
+
+5. NOTA SOBRE OFFSETS:
+Los offsets cambian en cada pequeña actualizacion del juego. Si usas un offset de una version vieja en una version nueva, el juego se cerrara (Crash) al intentar activarlo. Siempre debes re-dumpear la APK original despues de cada parche de Garena.
