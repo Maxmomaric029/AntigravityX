@@ -1,12 +1,16 @@
 package com.antigravityx
 
+import android.app.ActivityManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
@@ -26,36 +30,68 @@ class OverlayService : Service() {
         private const val NOTIF_ID    = 42
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val checkGameRunnable = object : Runnable {
+        override fun run() {
+            checkIfGameIsRunning()
+            handler.postDelayed(this, 3000)
+        }
+    }
+
+    private var detectorView: View? = null
+
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
         startForeground(NOTIF_ID, buildNotification())
-        addFloatingButton()
+        
+        // Wait 60 seconds before showing anything or enabling detection
+        handler.postDelayed({
+            addGestureDetector()
+            handler.post(checkGameRunnable)
+        }, 60000)
     }
 
-    private fun addFloatingButton() {
-        fabView = FloatingButtonView(this)
+    private fun addGestureDetector() {
+        detectorView = View(this).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnTouchListener { v, event ->
+                if (event.pointerCount == 3 && event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+                    if (!menuAdded) showMenu()
+                    else hideMenu()
+                    true
+                } else false
+            }
+        }
 
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            150, // Small trigger area to avoid blocking game too much
+            150,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.END
-            x = 16
-            y = 200
+            gravity = Gravity.TOP or Gravity.START
+            x = 0
+            y = 0
         }
+        windowManager.addView(detectorView, params)
+    }
 
-        fabView.onToggleMenu = { show ->
-            if (show) showMenu() else hideMenu()
+    private fun checkIfGameIsRunning() {
+        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val runningProcesses = am.runningAppProcesses
+        var found = false
+        if (runningProcesses != null) {
+            for (processInfo in runningProcesses) {
+                if (processInfo.processName == MenuState.TARGET_PACKAGE) {
+                    found = true
+                    break
+                }
+            }
         }
-        fabView.windowParams = params
-        fabView.windowManager = windowManager
-
-        windowManager.addView(fabView, params)
+        MenuState.isGameRunning = found
     }
 
     private fun showMenu() {
@@ -71,7 +107,6 @@ class OverlayService : Service() {
                 PixelFormat.TRANSLUCENT
             ).apply {
                 dimAmount = 0.4f
-                // Android 12+ Blur Behind
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     setBlurBehindRadius(25)
                 }
@@ -94,7 +129,7 @@ class OverlayService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::fabView.isInitialized) windowManager.removeView(fabView)
+        detectorView?.let { windowManager.removeView(it) }
         if (menuAdded && ::menuView.isInitialized) windowManager.removeView(menuView)
     }
 
@@ -116,7 +151,7 @@ class OverlayService : Service() {
     private fun buildNotification(): Notification =
         NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("AntiGravity X")
-            .setContentText("Overlay active — tap to manage")
+            .setContentText("Status: Standby")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)

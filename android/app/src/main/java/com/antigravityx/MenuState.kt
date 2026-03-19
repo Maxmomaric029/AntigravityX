@@ -60,4 +60,20 @@ object MenuState {
         "Kill BG Processes"   to false,
         "Registry Optimizer"  to false
     )
+
+    // ── Game Verification ─────────────────────────────────────────
+    const val TARGET_PACKAGE = "com.dts.freefireth"
+    var isGameRunning = false
+
+    init {
+        // try {
+        //     System.loadLibrary("antigravity")
+        // } catch (e: Exception) {
+        //     e.printStackTrace()
+        // }
+    }
+
+    // Native bridge methods
+    external fun getInitBase(): Long
+    external fun getOffset(name: String): Long
 }

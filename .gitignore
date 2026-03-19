@@ -1,21 +1,19 @@
+# Decompiled Data
+ff_decompiled/
+
+# Large APKs/Assets
+FreeFire.apk
+WhatsApp Video 2026-03-18 at 3.36.45 PM.mp4
+ChromeSetup.exe
+image.webp
+Capture_decran_2026-02-09_182141.webp
+a3056ba86cf2edec98dd4d325694b080.jpg
+
 # Build output
 build/
+*.apk
+*.idsig
 *.exe
 
-# Large zip archives (fonts already extracted, ImGui already extracted)
+# Large zip archives
 *.zip
-
-# Junk/temp files
-files.txt
-files2.txt
-
-# Clone test folder
-clone_test/
-
-# Root-level duplicate
-/main.cpp
-
-# VS / IDEs
-.vs/
-*.user
-*.suo
