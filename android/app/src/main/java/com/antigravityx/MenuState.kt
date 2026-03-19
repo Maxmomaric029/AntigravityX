@@ -1,8 +1,5 @@
 package com.antigravityx
 
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-
 /**
  * Global state for the AntiGravity X Android overlay.
  * Preserves settings even when the MenuView is detached.

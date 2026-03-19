@@ -1,5 +1,6 @@
 package com.antigravityx.ui
 
+import com.antigravityx.MenuState
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
@@ -323,7 +324,7 @@ class OverlayMenuView(context: Context) : View(context) {
     private fun drawCombatSection(canvas: Canvas, x: Float, startY: Float, w: Float): Float {
         var y = startY
         y = drawSectionHeader(canvas, x, y, w, "Aimbot & AimLock")
-        combatToggles.forEach { (label, _) ->
+        combatToggles.entries.forEach { (label, _) ->
             y = drawToggle(canvas, x, y, w, label, combatToggles)
         }
         y += 8f * dp
@@ -336,7 +337,7 @@ class OverlayMenuView(context: Context) : View(context) {
     private fun drawVisualsSection(canvas: Canvas, x: Float, startY: Float, w: Float): Float {
         var y = startY
         y = drawSectionHeader(canvas, x, y, w, "ESP & Wallhack")
-        visualsToggles.forEach { (label, _) ->
+        visualsToggles.entries.forEach { (label, _) ->
             y = drawToggle(canvas, x, y, w, label, visualsToggles)
         }
         return y
@@ -345,7 +346,7 @@ class OverlayMenuView(context: Context) : View(context) {
     private fun drawHitboxSection(canvas: Canvas, x: Float, startY: Float, w: Float): Float {
         var y = startY
         y = drawSectionHeader(canvas, x, y, w, "Trigger & Scale")
-        hitboxToggles.forEach { (label, _) ->
+        hitboxToggles.entries.forEach { (label, _) ->
             y = drawToggle(canvas, x, y, w, label, hitboxToggles)
         }
         y += 8f * dp
@@ -379,7 +380,7 @@ class OverlayMenuView(context: Context) : View(context) {
     private fun drawSystemSection(canvas: Canvas, x: Float, startY: Float, w: Float): Float {
         var y = startY
         y = drawSectionHeader(canvas, x, y, w, "Performance & Bypass")
-        systemToggles.forEach { (label, _) ->
+        systemToggles.entries.forEach { (label, _) ->
             y = drawToggle(canvas, x, y, w, label, systemToggles)
         }
         y += 8f * dp
@@ -395,7 +396,7 @@ class OverlayMenuView(context: Context) : View(context) {
         y = drawProgressBar(canvas, x, y, w, "RAM Usage", ramUsage, Color.parseColor("#00E5FF"))
         y += 8f * dp
         y = drawSectionHeader(canvas, x, y, w, "Automation")
-        agxToggles.forEach { (label, _) ->
+        agxToggles.entries.forEach { (label, _) ->
             y = drawToggle(canvas, x, y, w, label, agxToggles)
         }
         y += 12f * dp

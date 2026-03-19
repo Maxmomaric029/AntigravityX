@@ -15,6 +15,9 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
+import android.view.View
+import android.graphics.Color
+import android.view.MotionEvent
 import com.antigravityx.ui.FloatingButtonView
 import com.antigravityx.ui.OverlayMenuView
 
