@@ -24,8 +24,12 @@ uintptr_t g_il2cppBase = 0;
 uintptr_t get_base_address(const char* name) {
     uintptr_t base = 0;
     while (base == 0) {
-        base = KittyMemory::get_module_base(name);
-        if (base == 0) usleep(100000);
+        std::vector<KittyMemory::ProcMap> maps = KittyMemory::getMaps(KittyMemory::EProcMapFilter::EndWith, name);
+        if (!maps.empty()) {
+            base = maps[0].startAddress;
+        } else {
+            usleep(100000);
+        }
     }
     return base;
 }
@@ -33,11 +37,9 @@ uintptr_t get_base_address(const char* name) {
 void hack_thread() {
     g_il2cppBase = get_base_address("libil2cpp.so");
     
-    // Initialize patches with placeholders or real hex
-    // For No Recoil (V7A/PLAY: 0x0C inside WeaponData)
-    // Here we'll patch the function that uses it if we have the address
-    // But since the user gave me 0x18F4A20 for Speedhack in a previous file:
-    g_patches.speed = MemoryPatch::createWithHex("libil2cpp.so", 0x18F4A20, "00 00 A0 41"); // Example: 5.0f hex
+    // Initialize patches with absolute addresses (base + offset)
+    // For Speedhack (offset 0x18F4A20)
+    g_patches.speed = MemoryPatch::createWithHex(g_il2cppBase + 0x18F4A20, "00 00 A0 41"); // 5.0f hex
 }
 
 extern "C" JNIEXPORT void JNICALL
