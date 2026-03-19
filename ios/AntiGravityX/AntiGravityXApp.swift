@@ -2,69 +2,65 @@ import SwiftUI
 
 @main
 struct AntiGravityXApp: App {
+    @StateObject private var menuState = MenuState.shared
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            OverlayRootView()
+                .environmentObject(menuState)
         }
     }
 }
 
-struct ContentView: View {
-    @State private var isOverlayShowing = false
-    
+// MARK: - Root overlay host
+struct OverlayRootView: View {
+    @EnvironmentObject var state: MenuState
+    @State private var isMenuOpen = false
+    @State private var menuOffset = CGSize(width: -400, height: 0)
+    @State private var menuOpacity = 0.0
+
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "shield.fill")
-                .resizable()
-                .frame(width: 80, height: 80)
-                .foregroundColor(Color(hex: "7F52FF"))
-                .glow(color: Color(hex: "7F52FF"), radius: 15)
-            
-            Text("AntiGravity X - Premium")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            Button(action: {
-                isOverlayShowing.toggle()
-                // In a jailbroken environment, this would call into the OverlayWindowManager
-            }) {
-                Text(isOverlayShowing ? "Hide Overlay" : "Show Overlay")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color(hex: "7F52FF"))
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            // Floating button — always visible
+            FloatingButtonView(isMenuOpen: $isMenuOpen)
+
+            // Overlay panel with slide-in
+            if isMenuOpen {
+                Color.black.opacity(0.55)
+                    .ignoresSafeArea()
+                    .onTapGesture { closeMenu() }
+                    .transition(.opacity)
+
+                OverlayMenuView(onClose: closeMenu)
+                    .offset(menuOffset)
+                    .opacity(menuOpacity)
+                    .environmentObject(state)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .leading).combined(with: .opacity),
+                        removal:   .move(edge: .leading).combined(with: .opacity)
+                    ))
+                    .onAppear {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            menuOffset  = .zero
+                            menuOpacity = 1
+                        }
+                    }
             }
-            .padding(.horizontal, 40)
         }
-        .preferredColorScheme(.dark)
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
+        .onChange(of: isMenuOpen) { open in
+            if !open { menuOffset = CGSize(width: -400, height: 0); menuOpacity = 0 }
         }
-        self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
     }
-}
 
-extension View {
-    func glow(color: Color, radius: CGFloat) -> some View {
-        self.shadow(color: color, radius: radius / 3)
-            .shadow(color: color, radius: radius / 3)
-            .shadow(color: color, radius: radius / 3)
+    private func closeMenu() {
+        withAnimation(.easeIn(duration: 0.25)) {
+            menuOffset  = CGSize(width: -400, height: 0)
+            menuOpacity = 0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            isMenuOpen = false
+        }
     }
 }

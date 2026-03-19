@@ -1,0 +1,84 @@
+name: Build iOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-ios:
+    name: Build AntiGravityX IPA
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        working-directory: ios
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Xcode version ───────────────────────────────────────────
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      # ── Resolve SPM dependencies (if any) ───────────────────────
+      - name: Resolve Swift Package dependencies
+        run: |
+          xcodebuild \
+            -resolvePackageDependencies \
+            -scheme AntiGravityX \
+            -destination 'generic/platform=iOS' \
+            || true
+
+      # ── Build (no-sign) ─────────────────────────────────────────
+      - name: Build (iOS Simulator, no code sign)
+        run: |
+          xcodebuild \
+            -project AntiGravityX.xcodeproj \
+            -scheme  AntiGravityX \
+            -sdk     iphonesimulator \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            clean build \
+            | xcpretty || true
+
+      # ── Build for device (unsigned, for TrollStore) ─────────────
+      - name: Archive unsigned IPA (arm64 device)
+        run: |
+          xcodebuild \
+            -project AntiGravityX.xcodeproj \
+            -scheme  AntiGravityX \
+            -sdk     iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            ARCHS="arm64" \
+            archive \
+            -archivePath $RUNNER_TEMP/AntiGravityX.xcarchive
+
+      # ── Package as IPA ──────────────────────────────────────────
+      - name: Package IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/ipa/Payload
+          cp -R "$RUNNER_TEMP/AntiGravityX.xcarchive/Products/Applications/AntiGravityX.app" \
+                "$RUNNER_TEMP/ipa/Payload/"
+          cd $RUNNER_TEMP/ipa
+          zip -qr AntiGravityX.ipa Payload
+
+      # ── Upload artifact ─────────────────────────────────────────
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: AntiGravityX-iOS-IPA
+          path: ${{ runner.temp }}/ipa/AntiGravityX.ipa
+          retention-days: 14
