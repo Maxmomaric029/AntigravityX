@@ -15,7 +15,8 @@ object MenuState {
         "AimLock Smooth"   to false,
         "Silent Aim"       to false,
         "FOV Circle"       to false,
-        "No Recoil 100%"   to false
+        "No Recoil 100%"   to false,
+        "Speedhack x5"     to false
     )
     var combatFOV     = 80f
     var combatSmooth  = 4f
@@ -78,4 +79,13 @@ object MenuState {
     external fun applyNoRecoil(enable: Boolean)
     external fun applySpeedHack(enable: Boolean)
     external fun applyAntena(enable: Boolean)
+
+    fun setToggle(map: MutableMap<String, Boolean>, label: String, checked: Boolean) {
+        map[label] = checked
+        when (label) {
+            "No Recoil 100%" -> applyNoRecoil(checked)
+            "Speedhack x5"   -> applySpeedHack(checked)
+            "Antena View"    -> applyAntena(checked)
+        }
+    }
 }
