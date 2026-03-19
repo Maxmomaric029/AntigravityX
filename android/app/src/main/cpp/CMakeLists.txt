@@ -27,3 +27,5 @@ target_link_libraries(
         antigravity
         ${log-lib}
 )
+
+target_compile_definitions(antigravity PRIVATE kNO_KEYSTONE)
