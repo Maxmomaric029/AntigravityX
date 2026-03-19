@@ -30,7 +30,8 @@ object MenuState {
         "ESP Distance"     to false,
         "ESP Name & Clan"  to false,
         "ESP Skeleton"     to false,
-        "ESP Line"         to false
+        "ESP Line"         to false,
+        "Antena View"      to false
     )
 
     // ── HITBOX state ──────────────────────────────────────────────
@@ -66,14 +67,18 @@ object MenuState {
     var isGameRunning = false
 
     init {
-        // try {
-        //     System.loadLibrary("antigravity")
-        // } catch (e: Exception) {
-        //     e.printStackTrace()
-        // }
+        try {
+            System.loadLibrary("antigravity")
+            init() // Call native init
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // Native bridge methods
+    private external fun init()
     external fun getInitBase(): Long
-    external fun getOffset(name: String): Long
+    external fun applyNoRecoil(enable: Boolean)
+    external fun applySpeedHack(enable: Boolean)
+    external fun applyAntena(enable: Boolean)
 }

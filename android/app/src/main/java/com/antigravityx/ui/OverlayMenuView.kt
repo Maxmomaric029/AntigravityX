@@ -566,7 +566,8 @@ class OverlayMenuView(context: Context) : View(context) {
                         val rect = RectF(th.rect.left + panelX, th.rect.top - scrollY[activeSection],
                             th.rect.right + panelX, th.rect.bottom - scrollY[activeSection])
                         if (rect.contains(event.x, event.y)) {
-                            th.map[th.label] = !(th.map[th.label] ?: false)
+                            val nextVal = !(th.map[th.label] ?: false)
+                            MenuState.setToggle(th.map, th.label, nextVal)
                             invalidate()
                             return true
                         }

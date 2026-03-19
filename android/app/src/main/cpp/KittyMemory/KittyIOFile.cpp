@@ -144,7 +144,7 @@ bool KittyIOFile::readToString(std::string *str)
     if (_error == 0 && s.st_size > 0)
     {
         str->resize(s.st_size);
-        return (size_t)pread(0, str->data(), s.st_size) == (size_t)s.st_size;
+        return (size_t)pread(0, &(*str)[0], s.st_size) == (size_t)s.st_size;
     }
 
     std::vector<char> buffer(_bufferSize);
