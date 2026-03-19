@@ -1,0 +1,16 @@
+name: AntiGravityX
+options:
+  bundleIdPrefix: com.antigravityx
+targets:
+  AntiGravityX:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources: [AntiGravityX]
+    info:
+      path: ""
+      properties:
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations: {}

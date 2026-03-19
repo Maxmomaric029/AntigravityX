@@ -26,6 +26,12 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # ── Generate Xcode Project ──────────────────────────────────
+      - name: Generate Xcode Project with XcodeGen
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
       # ── Resolve SPM dependencies (if any) ───────────────────────
       - name: Resolve Swift Package dependencies
         run: |
